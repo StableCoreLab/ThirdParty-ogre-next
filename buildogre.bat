@@ -1,10 +1,11 @@
-@echo off
+﻿@echo off
 setlocal
 
 cd /d "%~dp0"
 
 set "OGRE_SOURCE_DIR=%CD%"
-set "OGRE_BUILD_DIR=%CD%\build"
+REM Set build directory to sibling 'Build\OgreNextVS2022' (parallel to ThirdParty-SARibbon)
+set "OGRE_BUILD_DIR=%CD%\..\Build\OgreNextVS2022"
 set "OGRE_DEPENDENCIES_DIR=%CD%\..\FreeImage\Dist\x64"
 set "FREEIMAGE_HOME=%OGRE_DEPENDENCIES_DIR%"
 

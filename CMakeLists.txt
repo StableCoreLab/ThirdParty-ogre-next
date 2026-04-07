@@ -1,4 +1,4 @@
-#-------------------------------------------------------------------
+﻿#-------------------------------------------------------------------
 # This file is part of the CMake build system for OGRE-Next
 #     (Object-oriented Graphics Rendering Engine)
 # For the latest info, see http://www.ogre3d.org/
@@ -301,10 +301,25 @@ else()
   set(OGRE_PLATFORM_DIR "${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
+# Make output root the parent ThirdParty folder so outputs are siblings of ThirdParty-SARibbon
 set(OGRE_OUTPUT_ROOT "${OGRE_SOURCE_DIR}/..")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${OGRE_OUTPUT_ROOT}/lib/$<CONFIG>/${OGRE_PLATFORM_DIR}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OGRE_OUTPUT_ROOT}/bin/$<CONFIG>/${OGRE_PLATFORM_DIR}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OGRE_OUTPUT_ROOT}/bin/$<CONFIG>/${OGRE_PLATFORM_DIR}")
+
+# Place final artifacts (exe, dll, lib, pdb) into a sibling Bin<Platform><Config> directory
+# e.g. ThirdParty/Binx64Debug
+set(OGRE_BIN_DIR "${OGRE_OUTPUT_ROOT}/Bin${OGRE_PLATFORM_DIR}$<CONFIG>")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${OGRE_BIN_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OGRE_BIN_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OGRE_BIN_DIR}")
+set(CMAKE_PDB_OUTPUT_DIRECTORY "${OGRE_BIN_DIR}")
+
+# Place intermediate (object/pdb) and temporary files into a sibling tmp<ProjectName><Platform><Config> directory
+# e.g. ThirdParty/tmpOgreMainx64Debug
+# Use PROJECT_NAME where possible; subprojects may override PROJECT_NAME in their own CMakeLists
+set(OGRE_TMP_ROOT "${OGRE_OUTPUT_ROOT}/tmp${PROJECT_NAME}${OGRE_PLATFORM_DIR}$<CONFIG>")
+# Try to set compile PDB and object output directories (may require a newer CMake)
+set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY "${OGRE_TMP_ROOT}")
+set(CMAKE_OBJECT_PATH_DIR "${OGRE_TMP_ROOT}")
+
 if (WIN32 OR APPLE)
   if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     # We don't want to install in default system location, install is really for the SDK, so call it that
@@ -533,7 +548,7 @@ set(OGRE_CONFIG_ALLOCATOR 0 CACHE STRING
   0 - None
   1 - Standard allocator. Supports additional debugging (see OGRE_CONFIG_MEMTRACK)
   3 - User-provided allocator
-  5 - Debug allocator that will assert on most forms of memory corruption and provides deterministic memory addressing (for easier debugging w/ data breakpoints). Not indended for release or deployment. You may want to tweak OGRE_TRACK_POOL_SIZE in OgreMain/src/OgreMemoryTrackAlloc.cpp."
+  5 - Debug allocator that will assert on most forms of memory corruption and provides deterministic memory addressing (for easier debugging w/ data breakpoints). Not indented for release or deployment. You may want to tweak OGRE_TRACK_POOL_SIZE in OgreMain/src/OgreMemoryTrackAlloc.cpp."
 )
 endif ()
 
