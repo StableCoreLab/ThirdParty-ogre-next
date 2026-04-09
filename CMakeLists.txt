@@ -194,7 +194,7 @@ if (MSVC)
   endif ()
   option(OGRE_BUILD_MSVC_MP "Enable build with multiple processes in Visual Studio" TRUE)
   if(OGRE_BUILD_MSVC_MP)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /FS")
   endif ()
   option(OGRE_BUILD_MSVC_ZM "Add /Zm256 compiler option to Visual Studio to fix PCH errors" TRUE)
 
@@ -292,7 +292,11 @@ if( OGRE_STATIC AND UNIX AND NOT APPLE AND NOT OGRE_CONFIG_UNIX_NO_X11 )
 	set( OGRE_LIBRARIES ${OGRE_LIBRARIES} xcb xcb-randr )
 endif()
 
-# Specify build paths
+set(OGRE_OUTPUT_ROOT "${OGRE_SOURCE_DIR}/..")
+# 统一的临时目录根：<ThirdParty>/tmp/OgreNext
+set(OGRE_TMP_OUTPUT_ROOT "${OGRE_OUTPUT_ROOT}/tmp/OgreNext")
+
+# 平台名
 if (CMAKE_VS_PLATFORM_NAME)
   set(OGRE_PLATFORM_DIR "${CMAKE_VS_PLATFORM_NAME}")
 elseif (CMAKE_GENERATOR_PLATFORM)
@@ -301,24 +305,33 @@ else()
   set(OGRE_PLATFORM_DIR "${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
-# Make output root the parent ThirdParty folder so outputs are siblings of ThirdParty-SARibbon
-set(OGRE_OUTPUT_ROOT "${OGRE_SOURCE_DIR}/..")
+# 多配置生成器（如VS）下，设置各配置输出目录
+if(NOT DEFINED CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo;MinSizeRel")
+endif()
+foreach(cfg IN LISTS CMAKE_CONFIGURATION_TYPES)
+  string(TOUPPER "${cfg}" CFG_UP)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CFG_UP} "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${cfg}")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CFG_UP} "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${cfg}")
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CFG_UP} "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${cfg}")
+  set(CMAKE_PDB_OUTPUT_DIRECTORY_${CFG_UP} "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${cfg}")
+  # 中间目录
+  set(CMAKE_INTDIR_${CFG_UP} "${OGRE_TMP_OUTPUT_ROOT}/${OGRE_PLATFORM_DIR}/${cfg}")
+endforeach()
 
-# Place final artifacts (exe, dll, lib, pdb) into a sibling Bin<Platform><Config> directory
-# e.g. ThirdParty/Binx64Debug
-set(OGRE_BIN_DIR "${OGRE_OUTPUT_ROOT}/Bin${OGRE_PLATFORM_DIR}$<CONFIG>")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${OGRE_BIN_DIR}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OGRE_BIN_DIR}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OGRE_BIN_DIR}")
-set(CMAKE_PDB_OUTPUT_DIRECTORY "${OGRE_BIN_DIR}")
+# 单配置生成器下，设置输出目录
+if(DEFINED CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE STREQUAL "")
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${CMAKE_BUILD_TYPE}")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${CMAKE_BUILD_TYPE}")
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${CMAKE_BUILD_TYPE}")
+  set(CMAKE_PDB_OUTPUT_DIRECTORY "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${CMAKE_BUILD_TYPE}")
+  set(CMAKE_INTDIR "${OGRE_TMP_OUTPUT_ROOT}/${OGRE_PLATFORM_DIR}/${CMAKE_BUILD_TYPE}")
+endif()
 
-# Place intermediate (object/pdb) and temporary files into a sibling tmp<ProjectName><Platform><Config> directory
-# e.g. ThirdParty/tmpOgreMainx64Debug
-# Use PROJECT_NAME where possible; subprojects may override PROJECT_NAME in their own CMakeLists
-set(OGRE_TMP_ROOT "${OGRE_OUTPUT_ROOT}/tmp${PROJECT_NAME}${OGRE_PLATFORM_DIR}$<CONFIG>")
-# Try to set compile PDB and object output directories (may require a newer CMake)
-set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY "${OGRE_TMP_ROOT}")
-set(CMAKE_OBJECT_PATH_DIR "${OGRE_TMP_ROOT}")
+# 兼容原有变量，设置临时文件根目录
+set(OGRE_TMP_ROOT_BASE "${OGRE_TMP_OUTPUT_ROOT}/${OGRE_PLATFORM_DIR}")
+set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY "${OGRE_TMP_ROOT_BASE}/$<CONFIG>")
+set(CMAKE_OBJECT_PATH_DIR "${OGRE_TMP_ROOT_BASE}/$<CONFIG>")
 
 if (WIN32 OR APPLE)
   if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

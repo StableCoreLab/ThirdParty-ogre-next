@@ -27,7 +27,7 @@ setupOgre( OGRE_SOURCE, OGRE_BINARIES, OGRE_LIBRARIES, FALSE, FALSE, FALSE )
 # Setup our application
 set( EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}" )
 if( MSVC )
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /FS")
 	if( NOT PLATFORM_X64 )
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2")
 	endif()
@@ -82,6 +82,7 @@ if( APPLE )
 endif()
 
 add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCES} ${HEADERS} ${RESOURCES} )
+ogre_set_target_compile_pdb( ${PROJECT_NAME} )
 target_link_libraries( ${PROJECT_NAME} ${OGRE_LIBRARIES} )
 
 if( APPLE )

@@ -31,6 +31,14 @@ function(check_and_update_file FILENAME CONTENT)
   endif ()
 endfunction()
 
+# Put compile PDBs in a per-target directory to avoid MSVC parallel build collisions.
+function(ogre_set_target_compile_pdb TARGETNAME)
+  set_target_properties(${TARGETNAME} PROPERTIES
+    COMPILE_PDB_NAME ${TARGETNAME}
+    COMPILE_PDB_OUTPUT_DIRECTORY "${OGRE_TMP_OUTPUT_ROOT}/${OGRE_BUILD_PLATFORM_DIR}/$<CONFIG>/${TARGETNAME}"
+  )
+endfunction()
+
 
 # generate unity build files for the given target.
 # If in the list of source files the key word SEPARATE is specified, then
@@ -103,6 +111,7 @@ function(ogre_add_library TARGETNAME LIBTYPE)
   if(WINDOWS_STORE OR WINDOWS_PHONE)
     set_target_properties(${TARGETNAME} PROPERTIES VS_WINRT_COMPONENT "true")
   endif()
+  ogre_set_target_compile_pdb(${TARGETNAME})
 endfunction(ogre_add_library)
 
 
@@ -132,4 +141,5 @@ function(ogre_add_executable TARGETNAME)
   if( APPLE )
 	set_target_properties( ${TARGETNAME} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "NO" )
   endif()
+  ogre_set_target_compile_pdb(${TARGETNAME})
 endfunction()

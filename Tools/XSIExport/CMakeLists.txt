@@ -27,4 +27,5 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${Softimage_INCLUDE_DIR})
 
 add_library(OgreXSIExporter MODULE ${HEADER_FILES} ${SOURCE_FILES} "misc/OgreXSIExport.def")
+ogre_set_target_compile_pdb(OgreXSIExporter)
 target_link_libraries(OgreXSIExporter ${OGRE_LIBRARIES} ${Softimage_LIBRARIES})

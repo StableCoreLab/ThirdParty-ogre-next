@@ -57,6 +57,7 @@ if( OGRE_STATIC )
 endif()
 
 add_library(${OGRE_SAMPLES_COMMON_LIBRARY} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+ogre_set_target_compile_pdb(${OGRE_SAMPLES_COMMON_LIBRARY})
 
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
 

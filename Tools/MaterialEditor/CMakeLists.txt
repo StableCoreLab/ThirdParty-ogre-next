@@ -30,6 +30,7 @@ list( APPEND SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../Samples/2.0/Common/src/Ut
 list( APPEND HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../../Samples/2.0/Common/include/Utils/HdrUtils.h )
 
 add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCES} ${HEADERS} )
+ogre_set_target_compile_pdb( ${PROJECT_NAME} )
 target_link_libraries( ${PROJECT_NAME} ${OGRE_NEXT}Main ${OGRE_NEXT}HlmsPbs ${OGRE_NEXT}HlmsUnlit ${wxWidgets_LIBRARIES} )
 
 target_include_directories( ${PROJECT_NAME} PRIVATE "./include"
