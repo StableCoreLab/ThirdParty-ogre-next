@@ -13,7 +13,15 @@
 # directory, but can also be used for custom projects.
 #############################################################
 
-if(WIN32 OR APPLE)
+if(WIN32)
+  if (CMAKE_VS_PLATFORM_NAME)
+    set(OGRE_CMAKE_DIR "Lib/${CMAKE_VS_PLATFORM_NAME}/CMake")
+  elseif (CMAKE_GENERATOR_PLATFORM)
+    set(OGRE_CMAKE_DIR "Lib/${CMAKE_GENERATOR_PLATFORM}/CMake")
+  else()
+    set(OGRE_CMAKE_DIR "Lib/${CMAKE_SYSTEM_PROCESSOR}/CMake")
+  endif()
+elseif(APPLE)
 	set(OGRE_CMAKE_DIR "CMake")
 else()
 	set(OGRE_CMAKE_DIR "${OGRE_LIB_DIRECTORY}/${OGRE_NEXT_PREFIX}/cmake")

@@ -234,8 +234,20 @@ install( FILES
 )
 
 
-# Create the pkg-config package files on Unix systems
-if (UNIX)
+# Create the pkg-config package files.
+if (WIN32)
+  if (CMAKE_VS_PLATFORM_NAME)
+    set(OGRE_PKGCONFIG_DIR "Lib/${CMAKE_VS_PLATFORM_NAME}/pkgconfig")
+  elseif (CMAKE_GENERATOR_PLATFORM)
+    set(OGRE_PKGCONFIG_DIR "Lib/${CMAKE_GENERATOR_PLATFORM}/pkgconfig")
+  else()
+    set(OGRE_PKGCONFIG_DIR "Lib/${CMAKE_SYSTEM_PROCESSOR}/pkgconfig")
+  endif()
+else()
+  set(OGRE_PKGCONFIG_DIR "${OGRE_LIB_DIRECTORY}/pkgconfig")
+endif()
+
+if (WIN32 OR UNIX)
   set(OGRE_LIB_SUFFIX "")
   set(OGRE_PLUGIN_PREFIX "")
   set(OGRE_PLUGIN_EXT ".so")
@@ -264,7 +276,7 @@ if (UNIX)
   else ()
     configure_file(${OGRE_TEMPLATES_DIR}/OGRE.pc.in ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}.pc @ONLY)
   endif ()
-  install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}.pc DESTINATION ${OGRE_LIB_DIRECTORY}/pkgconfig)
+  install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}.pc DESTINATION ${OGRE_PKGCONFIG_DIR})
 
   # configure additional packages
 
@@ -272,37 +284,37 @@ if (UNIX)
 
   if (OGRE_BUILD_COMPONENT_PAGING)
     configure_file(${OGRE_TEMPLATES_DIR}/OGRE-Paging.pc.in ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Paging.pc @ONLY)
-    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Paging.pc DESTINATION ${OGRE_LIB_DIRECTORY}/pkgconfig)
+    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Paging.pc DESTINATION ${OGRE_PKGCONFIG_DIR})
   endif ()
 
   if (OGRE_BUILD_COMPONENT_MESHLODGENERATOR)
     configure_file(${OGRE_TEMPLATES_DIR}/OGRE-MeshLodGenerator.pc.in ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-MeshLodGenerator.pc @ONLY)
-    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-MeshLodGenerator.pc DESTINATION ${OGRE_LIB_DIRECTORY}/pkgconfig)
+    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-MeshLodGenerator.pc DESTINATION ${OGRE_PKGCONFIG_DIR})
   endif ()
 
   if (OGRE_BUILD_COMPONENT_PROPERTY)
     configure_file(${OGRE_TEMPLATES_DIR}/OGRE-Property.pc.in ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Property.pc @ONLY)
-    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Property.pc DESTINATION ${OGRE_LIB_DIRECTORY}/pkgconfig)
+    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Property.pc DESTINATION ${OGRE_PKGCONFIG_DIR})
   endif ()
 
   if (OGRE_BUILD_COMPONENT_OVERLAY)
     configure_file(${OGRE_TEMPLATES_DIR}/OGRE-Overlay.pc.in ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Overlay.pc @ONLY)
-    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Overlay.pc DESTINATION ${OGRE_LIB_DIRECTORY}/pkgconfig)
+    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Overlay.pc DESTINATION ${OGRE_PKGCONFIG_DIR})
   endif ()
 
   if (OGRE_BUILD_COMPONENT_DEAR_IMGUI)
     configure_file(${OGRE_TEMPLATES_DIR}/OGRE-Imgui.pc.in ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Imgui.pc @ONLY)
-    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Imgui.pc DESTINATION ${OGRE_LIB_DIRECTORY}/pkgconfig)
+    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Imgui.pc DESTINATION ${OGRE_PKGCONFIG_DIR})
   endif ()
 
   if (OGRE_BUILD_COMPONENT_VOLUME)
     configure_file(${OGRE_TEMPLATES_DIR}/OGRE-Volume.pc.in ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Volume.pc @ONLY)
-    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Volume.pc DESTINATION ${OGRE_LIB_DIRECTORY}/pkgconfig)
+    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Volume.pc DESTINATION ${OGRE_PKGCONFIG_DIR})
   endif ()
 
   if (OGRE_BUILD_COMPONENT_HLMS_PBS AND OGRE_BUILD_COMPONENT_HLMS_UNLIT)
     configure_file(${OGRE_TEMPLATES_DIR}/OGRE-Hlms.pc.in ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Hlms.pc @ONLY)
-    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Hlms.pc DESTINATION ${OGRE_LIB_DIRECTORY}/pkgconfig)
+    install(FILES ${OGRE_BINARY_DIR}/pkgconfig/${OGRE_NEXT_PREFIX}-Hlms.pc DESTINATION ${OGRE_PKGCONFIG_DIR})
   endif ()
 
 endif ()

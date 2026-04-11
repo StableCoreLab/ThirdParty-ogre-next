@@ -298,7 +298,7 @@ if( OGRE_STATIC AND UNIX AND NOT APPLE AND NOT OGRE_CONFIG_UNIX_NO_X11 )
 endif()
 
 set(OGRE_OUTPUT_ROOT "${OGRE_SOURCE_DIR}/..")
-# ͳһ����ʱĿ¼����<ThirdParty>/tmp/OgreNext
+# 统一的临时目录根：<ThirdParty>/tmp/OgreNext
 set(OGRE_TMP_OUTPUT_ROOT "${OGRE_OUTPUT_ROOT}/tmp/OgreNext")
 
 if (CMAKE_VS_PLATFORM_NAME)
@@ -309,7 +309,7 @@ else()
   set(OGRE_PLATFORM_DIR "${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
-# ���������������� VS���£�Ϊÿ�����õ����������Ŀ¼
+# 多配置生成器（如 VS）下，为每个配置单独设置输出目录
 if(NOT DEFINED CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo;MinSizeRel")
 endif()
@@ -319,11 +319,11 @@ foreach(cfg IN LISTS CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CFG_UP} "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${cfg}")
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CFG_UP} "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${cfg}")
   set(CMAKE_PDB_OUTPUT_DIRECTORY_${CFG_UP} "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${cfg}")
-  # �м�Ŀ¼
+  # 中间目录
   set(CMAKE_INTDIR_${CFG_UP} "${OGRE_TMP_OUTPUT_ROOT}/${OGRE_PLATFORM_DIR}/${cfg}")
 endforeach()
 
-# �������������£��������Ŀ¼
+# 单配置生成器下，设置输出目录
 if(DEFINED CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE STREQUAL "")
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${CMAKE_BUILD_TYPE}")
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OGRE_OUTPUT_ROOT}/bin/${OGRE_PLATFORM_DIR}/${CMAKE_BUILD_TYPE}")
@@ -332,7 +332,7 @@ if(DEFINED CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE STREQUAL "")
   set(CMAKE_INTDIR "${OGRE_TMP_OUTPUT_ROOT}/${OGRE_PLATFORM_DIR}/${CMAKE_BUILD_TYPE}")
 endif()
 
-# ����ԭ�б�����������ʱ�ļ���Ŀ¼
+# 兼容原有变量，设置临时文件根目录
 set(OGRE_TMP_ROOT_BASE "${OGRE_TMP_OUTPUT_ROOT}/${OGRE_PLATFORM_DIR}")
 set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY "${OGRE_TMP_ROOT_BASE}/$<CONFIG>")
 set(CMAKE_OBJECT_PATH_DIR "${OGRE_TMP_ROOT_BASE}/$<CONFIG>")
@@ -629,7 +629,17 @@ option(OGRE_SIMD_NEON "Enable SIMD (Include NEON files)." TRUE)
 option(OGRE_RESTRICT_ALIASING "Restrict aliasing." TRUE)
 option(OGRE_IDSTRING_ALWAYS_READABLE "Always keep readable strings on IdString, even in Release builds." FALSE)
 cmake_dependent_option(OGRE_CONFIG_STATIC_LINK_CRT "Statically link the MS CRT dlls (msvcrt)" FALSE "MSVC" FALSE)
-set(OGRE_LIB_DIRECTORY "lib${LIB_SUFFIX}" CACHE STRING "Install path for libraries, e.g. 'lib64' on some 64-bit Linux distros.")
+if (WIN32)
+  if (CMAKE_VS_PLATFORM_NAME)
+    set(OGRE_LIB_DIRECTORY "Lib/${CMAKE_VS_PLATFORM_NAME}" CACHE STRING "Install path for libraries, e.g. ''Lib/x64'' on Windows or ''lib64'' on some 64-bit Linux distros." FORCE)
+  elseif (CMAKE_GENERATOR_PLATFORM)
+    set(OGRE_LIB_DIRECTORY "Lib/${CMAKE_GENERATOR_PLATFORM}" CACHE STRING "Install path for libraries, e.g. ''Lib/x64'' on Windows or ''lib64'' on some 64-bit Linux distros." FORCE)
+  else()
+    set(OGRE_LIB_DIRECTORY "Lib/${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "Install path for libraries, e.g. ''Lib/x64'' on Windows or ''lib64'' on some 64-bit Linux distros." FORCE)
+  endif()
+else()
+  set(OGRE_LIB_DIRECTORY "lib${LIB_SUFFIX}" CACHE STRING "Install path for libraries, e.g. ''lib64'' on some 64-bit Linux distros.")
+endif()
 if (WIN32)
 	option(OGRE_INSTALL_VSPROPS "Install Visual Studio Property Page." FALSE)
 	if (OGRE_INSTALL_VSPROPS)
@@ -789,3 +799,4 @@ include(Packaging)
 
 # Show feature summary
 include(OgreFeatureSummary)
+
