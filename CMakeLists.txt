@@ -202,6 +202,11 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm256")
   endif ()
 endif ()
+
+if (MSVC)
+  add_compile_options(/utf-8)
+endif()
+
 if (MINGW)
   add_definitions(-D_WIN32_WINNT=0x0500)
   if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
@@ -296,7 +301,6 @@ set(OGRE_OUTPUT_ROOT "${OGRE_SOURCE_DIR}/..")
 # 统一的临时目录根：<ThirdParty>/tmp/OgreNext
 set(OGRE_TMP_OUTPUT_ROOT "${OGRE_OUTPUT_ROOT}/tmp/OgreNext")
 
-# 骞冲彴鍚?
 if (CMAKE_VS_PLATFORM_NAME)
   set(OGRE_PLATFORM_DIR "${CMAKE_VS_PLATFORM_NAME}")
 elseif (CMAKE_GENERATOR_PLATFORM)
