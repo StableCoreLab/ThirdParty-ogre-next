@@ -37,5 +37,5 @@ ogre_config_framework(${OGRE_NEXT}Paging)
 ogre_config_component(${OGRE_NEXT}Paging)
 
 install(FILES ${HEADER_FILES}
-  DESTINATION include/${OGRE_NEXT_PREFIX}/Paging
+  DESTINATION Include/${OGRE_NEXT_PREFIX}/Paging
 )

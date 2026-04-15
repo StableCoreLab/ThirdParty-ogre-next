@@ -230,7 +230,7 @@ install( FILES
 	${OGRE_BINARY_DIR}/include/OgreBuildSettings.h
 	${OGRE_BINARY_DIR}/include/OgreGL3PlusBuildSettings.h
 	${OGRE_BINARY_DIR}/include/OgreVulkanBuildSettings.h
-	DESTINATION include/${OGRE_NEXT_PREFIX}
+	DESTINATION Include/${OGRE_NEXT_PREFIX}
 )
 
 

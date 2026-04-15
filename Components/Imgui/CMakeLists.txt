@@ -60,5 +60,5 @@ ogre_config_framework(${OGRE_NEXT}Imgui)
 ogre_config_component(${OGRE_NEXT}Imgui)
 
 install(FILES ${HEADER_FILES}
-  DESTINATION include/${OGRE_NEXT_PREFIX}/Imgui
+  DESTINATION Include/${OGRE_NEXT_PREFIX}/Imgui
 )

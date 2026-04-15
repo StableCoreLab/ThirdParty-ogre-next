@@ -56,12 +56,12 @@ ogre_config_component(${OGRE_NEXT}HlmsPbs)
 message(STATUS "OGRE_NEXT_PREFIX: ${OGRE_NEXT_PREFIX}")
 
 install (DIRECTORY include/
-        DESTINATION include/${OGRE_NEXT_PREFIX}/Hlms/Pbs
+        DESTINATION Include/${OGRE_NEXT_PREFIX}/Hlms/Pbs
         FILES_MATCHING PATTERN "*.h"
         )
 
 # also install HLMS Common folder
 install (DIRECTORY ../Common/include/
-        DESTINATION include/${OGRE_NEXT_PREFIX}/Hlms/Common
+        DESTINATION Include/${OGRE_NEXT_PREFIX}/Hlms/Common
         FILES_MATCHING PATTERN "*.h" PATTERN "*.inl"
         )
